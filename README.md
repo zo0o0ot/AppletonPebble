@@ -1,7 +1,7 @@
 # AppletonPebble
 Pebble Watch app to retrieve recycling info.
 
-This app accepts user addresses by entering your own Appleton Property ID in the Pebble Settings screen on the Pebble mobile app.  Source code for the Pebble configuration page is found in [my PebblePages fork](https://github.com/zo0o0ot/PebblePages)
+This app accepts user addresses by entering your own Appleton Property ID in the Pebble Settings screen on the Pebble mobile app.  Source code for the Pebble configuration page is found in [my PebblePages fork](https://github.com/zo0o0ot/PebblePages).
 
 Thanks to:
 

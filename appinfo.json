@@ -1,7 +1,5 @@
 {
-    "appKeys": {
-        "propertyId" : 315427100
-    },
+    "appKeys": {},
     "capabilities": [
         "configurable"
     ],

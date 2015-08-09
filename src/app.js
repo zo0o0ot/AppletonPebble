@@ -43,14 +43,11 @@ splashWindow.show();
 
 var propertyId = Settings.option('propertyId');
 
+console.log('Property Id is: ' + propertyId);
+
 if (propertyId === null || propertyId === undefined)
   {
-    console.log('Property Id is: ' + propertyId);
     propertyId = 315427100;
-  }
-else
-  {
-    console.log('Property Id is: ' + propertyId);
   }
 
 // Check for existing recycle data that is still relevant.

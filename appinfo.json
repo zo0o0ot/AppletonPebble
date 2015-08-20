@@ -4,7 +4,7 @@
         "configurable"
     ],
     "companyName": "mrosack@gmail.com",
-    "longName": "Is It Recycling Week?",
+    "longName": "Recycling Week",
     "projectType": "pebblejs",
     "resources": {
         "media": [
@@ -32,8 +32,8 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "IsItRecyclingWeek",
-    "uuid": "a9828573-8088-463f-bcb2-0b0aca11fc21",
+    "shortName": "RecyclingWeek",
+    "uuid": "003ddf52-40d4-4af2-9cbc-21e5bd419ef1",
     "versionCode": 1,
     "versionLabel": "1.0",
     "watchapp": {

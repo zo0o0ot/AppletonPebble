@@ -19,6 +19,8 @@ Settings.config(
 
     Settings.option('address', e.options.address);
     Settings.option('zipcode', e.options.zipcode);
+    Settings.option('savedRecycleDay', null);
+    Settings.option('implementationUrl', null);
     // Show the raw response if parsing failed
     if (e.failed) {
       console.log(e.response);
@@ -53,7 +55,41 @@ var showRecycleDay = function(recycleDay) {
   }).show();
 };
 
-if (address === undefined) {
+var loadRecyclingDay = function(implementationUrl) {
+  // Make the request to the implementor
+  ajax({
+    url: implementationUrl + '?addr=' + address,
+    type: 'json'
+  },
+  function(data){
+    console.log('Response from implementation: ' + JSON.stringify(data));
+    var recycleDay = null;
+
+    for (var i = 0; i < data.length; i++) {
+      if (data[i].collectionType === 'recycling') {
+        recycleDay = data[i].collectionDate;
+        console.log('Found recycling day: ' + recycleDay);
+        break;
+      }
+    }
+
+    if (!recycleDay) {
+      new UI.Card({
+        title: 'No Recycling Info Found',
+        body: 'We couldn\'t find recycling info for your address, please check your address and try again!'
+      }).show();
+    } else {
+      //Save the recycle day to the watch settings storage (Settings.option)
+      Settings.option('savedRecycleDay', recycleDay);
+
+      showRecycleDay(recycleDay);
+    }
+  }, function(error) {
+    console.log('Implementation Call failed: ' + error);
+  });
+};
+
+if (!address) {
   new UI.Card({
     title:'No Address Set',
     body:'Please set your address and zipcode in the configuration!'
@@ -68,17 +104,24 @@ if (address === undefined) {
     var tomorrow = moment().add(1, 'd');
     var savedRecycleMoment = moment(savedRecycleDay, "YYYY-MM-DD");
     console.log('Saved Recycle Moment is: ' + moment(savedRecycleMoment).format("dddd, MMMM Do YYYY"));
+    if (!savedRecycleMoment.isAfter(tomorrow)) {
+      savedRecycleDay = null;
+    }
   }
   
-  if (savedRecycleDay !== null && savedRecycleDay !== undefined && savedRecycleMoment.isAfter(tomorrow))
+  if (savedRecycleDay)
   {
+    console.log('Showing cached recycle day...');
     showRecycleDay(savedRecycleDay);
   }
   else
   {
+    console.log('Loading new recycle day information...');
     var implementationUrl = Settings.option('implementationUrl');
     
-    if (implementationUrl === undefined) {
+    if (implementationUrl) {
+      loadRecyclingDay(implementationUrl);
+    } else {
       // Make request to civic hack locator to find implementation
       ajax({
         url: 'http://civic-hack-api-locator.azurewebsites.net:80/api/implementations/byzipcode/' + zipcode,
@@ -101,38 +144,7 @@ if (address === undefined) {
           }).show();
         } else {
           Settings.option('implementationUrl', implementationUrl);
-          
-          // Make the request to the implementor
-          ajax({
-            url: implementationUrl + '?addr=' + address,
-            type: 'json'
-          },
-          function(data){
-            console.log('Response from implementation: ' + JSON.stringify(data));
-            var recycleDay = null;
-            
-            for (var i = 0; i < data.length; i++) {
-              if (data[i].collectionType === 'recycling') {
-                recycleDay = data[i].collectionDate;
-                console.log('Found recycling day: ' + recycleDay);
-                break;
-              }
-            }
-            
-            if (recycleDay === null) {
-              new UI.Card({
-                title: 'No Recycling Info Found',
-                body: 'We couldn\'t find recycling info for your address, please check your address and try again!'
-              }).show();
-            } else {
-              //Save the recycle day to the watch settings storage (Settings.option)
-              Settings.option('savedRecycleDay', recycleDay);
-              
-              showRecycleDay(recycleDay);
-            }
-          }, function(error) {
-            console.log('Implementation Call failed: ' + error);
-          });
+          loadRecyclingDay(implementationUrl);
         }
       }, function(error) {
         console.log('Implementation Lookup failed: ' + error);

@@ -10,14 +10,15 @@ var splashWindow = new UI.Window();
 
 // Set a configurable with just the close callback
 Settings.config(
-  { url: 'http://zo0o0ot.github.io/PebblePages/' },
+  { url: 'http://mrosack.github.io/AppletonPebble/' },
   function(e) {
     console.log('closed configurable');
 
     // Show the parsed response
     console.log(JSON.stringify(e.options));
 
-    Settings.option('propertyId', e.options.propertyId);
+    Settings.option('address', e.options.address);
+    Settings.option('zipcode', e.options.zipcode);
     // Show the raw response if parsing failed
     if (e.failed) {
       console.log(e.response);
@@ -41,59 +42,101 @@ var text = new UI.Text({
 splashWindow.add(text);
 splashWindow.show();
 
-var propertyId = Settings.option('propertyId');
+var address = Settings.option('address');
+var zipcode = Settings.option('zipcode');
 
-console.log('Property Id is: ' + propertyId);
+var showRecycleDay = function(recycleDay) {
+  // Create a Card with title and subtitle
+  new UI.Card({
+    title:'Next Recycle Day:',
+    subtitle:moment(recycleDay, "YYYY-MM-DD").format('ddd, MMM Do')
+  }).show();
+};
 
-if (propertyId === null || propertyId === undefined)
-  {
-    propertyId = 315427100;
-  }
-
-// Check for existing recycle data that is still relevant.
-var savedRecycleDay = Settings.option('savedRecycleDay');
-console.log('Saved Recycle Day is: ' + savedRecycleDay);
-if (savedRecycleDay !== undefined)
+if (address === undefined) {
+  new UI.Card({
+    title:'No Address Set',
+    body:'Please set your address and zipcode in the configuration!'
+  }).show();
+} else {
+  // Check for existing recycle data that is still relevant.
+  var savedRecycleDay = Settings.option('savedRecycleDay');
+  console.log('Saved Recycle Day is: ' + savedRecycleDay);
+  
+  if (savedRecycleDay !== undefined)
   {
     var tomorrow = moment().add(1, 'd');
-    var savedRecycleMoment = moment(savedRecycleDay, "dddd, MM-DD-YYYY");
+    var savedRecycleMoment = moment(savedRecycleDay, "YYYY-MM-DD");
     console.log('Saved Recycle Moment is: ' + moment(savedRecycleMoment).format("dddd, MMMM Do YYYY"));
   }
-if (savedRecycleDay !== null && savedRecycleDay !== undefined && savedRecycleMoment.isAfter(tomorrow))
+  
+  if (savedRecycleDay !== null && savedRecycleDay !== undefined && savedRecycleMoment.isAfter(tomorrow))
   {
-    var card = new UI.Card({
-      title:'Next Recycle Day:',
-      subtitle:savedRecycleDay
-    });
-    card.show();
+    showRecycleDay(savedRecycleDay);
   }
-else
+  else
   {
-    // Make request to Appleton API
-    ajax(
-      {
-        //URL for Appleton API plus the user's property ID.
-        url:'http://appletonapi.appspot.com/property/' + propertyId,
-        type:'json'
+    var implementationUrl = Settings.option('implementationUrl');
+    
+    if (implementationUrl === undefined) {
+      // Make request to civic hack locator to find implementation
+      ajax({
+        url: 'http://civic-hack-api-locator.azurewebsites.net:80/api/implementations/byzipcode/' + zipcode,
+        type: 'json'
       },
       function(data) {
-        // The location of the recycling day is data[1].recycleday; 
-        var recycleDay = data[1].recycleday;
-        // Create a Card with title and subtitle
-        var card = new UI.Card({
-          title:'Next Recycle Day:',
-          subtitle:recycleDay
-        });
-    
-        //Save the recycle day to the watch settings storage (Settings.option)
-        Settings.option('savedRecycleDay', recycleDay);
-        // Display the Card
-        card.show();
-      },
-      function(error) {
-        console.log('Download failed: ' + error);
-      }
-    );    
+        console.log('Response from implementations by zipcode: ' + JSON.stringify(data));
+        for (var i = 0; i < data.length; i++) {
+          if (data[i].contractName === 'upcoming-garbage-recycling-dates') {
+            implementationUrl = data[i].implementationApiUrl;
+            console.log('Found Implementation URL: ' + data[i].implementationApiUrl);
+          }
+        }
+        
+        if (implementationUrl === undefined) {
+          // If it's still undefined, tell the user we don't have an API that can serve them :(
+          new UI.Card({
+            title:'No API Available :(',
+            body:'No one has implemented an API that can tell us about the recycling info for your area yet.  Maybe you can do that?'
+          }).show();
+        } else {
+          Settings.option('implementationUrl', implementationUrl);
+          
+          // Make the request to the implementor
+          ajax({
+            url: implementationUrl + '?addr=' + address,
+            type: 'json'
+          },
+          function(data){
+            console.log('Response from implementation: ' + JSON.stringify(data));
+            var recycleDay = null;
+            
+            for (var i = 0; i < data.length; i++) {
+              if (data[i].collectionType === 'recycling') {
+                recycleDay = data[i].collectionDate;
+                console.log('Found recycling day: ' + recycleDay);
+                break;
+              }
+            }
+            
+            if (recycleDay === null) {
+              new UI.Card({
+                title: 'No Recycling Info Found',
+                body: 'We couldn\'t find recycling info for your address, please check your address and try again!'
+              }).show();
+            } else {
+              //Save the recycle day to the watch settings storage (Settings.option)
+              Settings.option('savedRecycleDay', recycleDay);
+              
+              showRecycleDay(recycleDay);
+            }
+          }, function(error) {
+            console.log('Implementation Call failed: ' + error);
+          });
+        }
+      }, function(error) {
+        console.log('Implementation Lookup failed: ' + error);
+      });
+    }   
   }
-
-
+}

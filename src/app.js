@@ -1,12 +1,8 @@
 var UI = require('ui');
 var ajax = require('ajax');
-var Vector2 = require('vector2');
 var Settings = require('settings');
 //moment.js is already there (vendor directory, used by Clock).  I don't need to import it.  CloudPebble doesn't like it, but I can use it simply by typing moment();
 //var Moment = require('moment');
-
-// Show splash screen while waiting for data
-var splashWindow = new UI.Window();
 
 // Set a configurable with just the close callback
 Settings.config(
@@ -27,22 +23,6 @@ Settings.config(
     }
   }
 );
-
-// Text element to inform user
-var text = new UI.Text({
-  position: new Vector2(0, 0),
-  size: new Vector2(144, 168),
-  text:'Downloading trash data...',
-  font:'GOTHIC_28_BOLD',
-  color:'black',
-  textOverflow:'wrap',
-  textAlign:'center',
-	backgroundColor:'white'
-});
-
-// Add to splashWindow and show
-splashWindow.add(text);
-splashWindow.show();
 
 var address = Settings.option('address');
 var zipcode = Settings.option('zipcode');
@@ -76,7 +56,8 @@ var loadRecyclingDay = function(implementationUrl) {
     if (!recycleDay) {
       new UI.Card({
         title: 'No Recycling Info Found',
-        body: 'We couldn\'t find recycling info for your address, please check your address and try again!'
+        body: 'We couldn\'t find recycling info for your address, please check your address and try again!',
+        scrollable: true
       }).show();
     } else {
       //Save the recycle day to the watch settings storage (Settings.option)
@@ -92,9 +73,20 @@ var loadRecyclingDay = function(implementationUrl) {
 if (!address) {
   new UI.Card({
     title:'No Address Set',
-    body:'Please set your address and zipcode in the configuration!'
+    body:'Please set your address and zipcode in the configuration!',
+    scrollable: true
   }).show();
 } else {
+  var splashCard = new UI.Card({
+    title: 'Downloading Trash Data...'
+  });
+  
+  splashCard.on('hide', function() {
+    splashCard.hide();
+  });
+  
+  splashCard.show();
+  
   // Check for existing recycle data that is still relevant.
   var savedRecycleDay = Settings.option('savedRecycleDay');
   console.log('Saved Recycle Day is: ' + savedRecycleDay);
@@ -136,15 +128,16 @@ if (!address) {
           }
         }
         
-        if (implementationUrl === undefined) {
+        if (implementationUrl) {
+          Settings.option('implementationUrl', implementationUrl);
+          loadRecyclingDay(implementationUrl);
+        } else {
           // If it's still undefined, tell the user we don't have an API that can serve them :(
           new UI.Card({
             title:'No API Available :(',
-            body:'No one has implemented an API that can tell us about the recycling info for your area yet.  Maybe you can do that?'
+            body:'No one has implemented an API that can tell us about the recycling info for your area yet.  Maybe you can do that?',
+            scrollable: true
           }).show();
-        } else {
-          Settings.option('implementationUrl', implementationUrl);
-          loadRecyclingDay(implementationUrl);
         }
       }, function(error) {
         console.log('Implementation Lookup failed: ' + error);

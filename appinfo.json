@@ -3,8 +3,8 @@
     "capabilities": [
         "configurable"
     ],
-    "companyName": "mrosack@gmail.com",
-    "longName": "Recycling Week",
+    "companyName": "zo0o0ot@gmail.com",
+    "longName": "NE Wisconsin Recycling",
     "projectType": "pebblejs",
     "resources": {
         "media": [
@@ -32,8 +32,8 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "RecyclingWeek",
-    "uuid": "003ddf52-40d4-4af2-9cbc-21e5bd419ef1",
+    "shortName": "NEWisconsinRecycling",
+    "uuid": "13e3bf46-cb25-4aed-906e-d2bd6c9c5e54",
     "versionCode": 1,
     "versionLabel": "1.0",
     "watchapp": {

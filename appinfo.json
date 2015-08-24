@@ -4,7 +4,7 @@
         "configurable"
     ],
     "companyName": "zo0o0ot@gmail.com",
-    "longName": "AppletonRecycle",
+    "longName": "NE Wisconsin Recycling",
     "projectType": "pebblejs",
     "resources": {
         "media": [
@@ -32,7 +32,7 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "AppletonRecycle",
+    "shortName": "NEWisconsinRecycling",
     "uuid": "13e3bf46-cb25-4aed-906e-d2bd6c9c5e54",
     "versionCode": 1,
     "versionLabel": "1.0",

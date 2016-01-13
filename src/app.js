@@ -6,7 +6,7 @@ var Settings = require('settings');
 
 // Set a configurable with just the close callback
 Settings.config(
-  { url: 'http://dhmncivichacks.github.io/AppletonPebble/' },
+  { url: 'http://dhmncivichacks.github.io/PebblePages/' },
   function(e) {
     console.log('closed configurable');
 

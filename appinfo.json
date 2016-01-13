@@ -4,7 +4,7 @@
         "configurable"
     ],
     "companyName": "zo0o0ot@gmail.com",
-    "longName": "AppletonRecycle",
+    "longName": "NE Wisconsin Recycling",
     "projectType": "pebblejs",
     "resources": {
         "media": [
@@ -12,17 +12,17 @@
                 "file": "images/menu_icon.png",
                 "menuIcon": true,
                 "name": "IMAGE_MENU_ICON",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/logo_splash.png",
                 "name": "IMAGE_LOGO_SPLASH",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "images/tile_splash.png",
                 "name": "IMAGE_TILE_SPLASH",
-                "type": "png"
+                "type": "bitmap"
             },
             {
                 "file": "fonts/UbuntuMono-Regular.ttf",
@@ -32,11 +32,16 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "AppletonRecycle",
+    "shortName": "NEWisconsinRecycling",
+    "targetPlatforms": [
+        "aplite",
+        "basalt"
+    ],
     "uuid": "13e3bf46-cb25-4aed-906e-d2bd6c9c5e54",
     "versionCode": 1,
     "versionLabel": "1.0",
     "watchapp": {
+        "hiddenApp": false,
         "watchface": false
     }
 }

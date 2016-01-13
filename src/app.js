@@ -31,7 +31,10 @@ var showRecycleDay = function(recycleDay) {
   // Create a Card with title and subtitle
   new UI.Card({
     title:'Next Recycle Day:',
-    subtitle:moment(recycleDay, "YYYY-MM-DD").format('ddd, MMM Do')
+    subtitle:moment(recycleDay, "YYYY-MM-DD").format('ddd, MMM Do'),
+    titleColor: 'green',
+    subtitleColor:'green',
+    backgroundColor: 'darkGreen',
   }).show();
 };
 
@@ -57,6 +60,9 @@ var loadRecyclingDay = function(implementationUrl) {
       new UI.Card({
         title: 'No Recycling Info Found',
         body: 'We couldn\'t find recycling info for your address, please check your address and try again!',
+        titleColor: 'green',
+        bodyColor:'green',
+        backgroundColor: 'darkGreen',
         scrollable: true
       }).show();
     } else {
@@ -73,12 +79,17 @@ var loadRecyclingDay = function(implementationUrl) {
 if (!address) {
   new UI.Card({
     title:'No Address Set',
+    titleColor: 'green',
     body:'Please set your address and zipcode in the configuration!',
+    bodyColor:'green',
+    backgroundColor: 'darkGreen',
     scrollable: true
   }).show();
 } else {
   var splashCard = new UI.Card({
-    title: 'Downloading Trash Data...'
+    title: 'Downloading Trash Data...',
+    titleColor: 'green',
+    backgroundColor: 'darkGreen'
   });
   
   splashCard.on('hide', function() {
@@ -136,6 +147,9 @@ if (!address) {
           new UI.Card({
             title:'No API Available :(',
             body:'No one has implemented an API that can tell us about the recycling info for your area yet.  Maybe you can do that?',
+            titleColor: 'red',
+            bodyColor:'red',
+            backgroundColor: 'darkGreen',
             scrollable: true
           }).show();
         }

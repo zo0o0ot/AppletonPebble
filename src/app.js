@@ -1,3 +1,8 @@
+// This app supports the following watches:
+// Pebble (APLITE)
+// Pebble Time (BASALT)
+// Pebble Time Round (CHALK)
+// Unsupported at this time: Pebble 2 (DIORITE)
 var UI = require('ui');
 var ajax = require('ajax');
 var Settings = require('settings');
@@ -6,7 +11,7 @@ var Settings = require('settings');
 
 // Set a configurable with just the close callback
 Settings.config(
-  { url: 'http://mrosack.github.io/AppletonPebble/' },
+  { url: 'http://dhmncivichacks.github.io/PebblePages/' },
   function(e) {
     console.log('closed configurable');
 

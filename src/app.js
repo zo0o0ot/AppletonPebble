@@ -1,3 +1,8 @@
+// This app supports the following watches:
+// Pebble (APLITE)
+// Pebble Time (BASALT)
+// Pebble Time Round (CHALK)
+// Unsupported at this time: Pebble 2 (DIORITE)
 var UI = require('ui');
 var ajax = require('ajax');
 var Settings = require('settings');
